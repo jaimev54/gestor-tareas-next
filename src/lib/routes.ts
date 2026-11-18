@@ -9,6 +9,9 @@ export const ROUTES = {
   tasks: "/tareas",
 } as const;
 
+/** Enlaces de la barra de navegación del área privada (se irán sumando en cada paso). */
+export const APP_NAV_LINKS = [{ href: ROUTES.tasks, label: "Tareas" }] as const;
+
 /** Página a la que va un usuario después de iniciar sesión. */
 export const DEFAULT_AFTER_LOGIN = ROUTES.tasks;
 

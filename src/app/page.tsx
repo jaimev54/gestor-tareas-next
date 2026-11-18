@@ -1,69 +1,150 @@
-import Image from "next/image";
+import {
+  BarChart3,
+  CalendarClock,
+  Columns3,
+  FolderKanban,
+  type LucideIcon,
+  Moon,
+  ShieldCheck,
+} from "lucide-react";
+import Link from "next/link";
 
-export default function Home() {
+import { PublicHeader } from "@/components/layout/PublicHeader";
+import { SiteFooter } from "@/components/layout/SiteFooter";
+import { buttonStyles } from "@/components/ui/button";
+import { ROUTES } from "@/lib/routes";
+
+const FEATURES: { icon: LucideIcon; title: string; text: string }[] = [
+  {
+    icon: FolderKanban,
+    title: "Proyectos y etiquetas",
+    text: "Agrupa tus tareas por proyecto y clasifícalas con etiquetas de colores.",
+  },
+  {
+    icon: Columns3,
+    title: "Tablero kanban",
+    text: "Arrastra las tareas entre Pendiente, En progreso y Hecha.",
+  },
+  {
+    icon: CalendarClock,
+    title: "Prioridades y fechas",
+    text: "Marca la prioridad y la fecha límite. Las vencidas se ven al momento.",
+  },
+  {
+    icon: BarChart3,
+    title: "Estadísticas",
+    text: "Mira cuántas tareas completas cada semana y qué tienes pendiente.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Tus datos, solo tuyos",
+    text: "Cada usuario ve únicamente sus tareas, protegido en la propia base de datos.",
+  },
+  {
+    icon: Moon,
+    title: "Modo claro y oscuro",
+    text: "Se adapta a tu sistema o elige el tema que prefieras.",
+  },
+];
+
+// Vista previa decorativa de la app (no son datos reales).
+const PREVIEW_COLUMNS = [
+  { title: "Pendiente", tasks: [{ t: "Preparar presentación", p: "Alta" }, { t: "Revisar correos", p: "Baja" }] },
+  { title: "En progreso", tasks: [{ t: "Diseñar la landing", p: "Media" }] },
+  { title: "Hecha", tasks: [{ t: "Configurar Supabase", p: "Alta" }] },
+];
+
+const PRIORITY_STYLES: Record<string, string> = {
+  Alta: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300",
+  Media: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
+  Baja: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
+};
+
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <>
+      <PublicHeader />
+      <main id="contenido" className="flex-1">
+        {/* Hero */}
+        <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:py-24 lg:grid-cols-2">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
+              Organiza tus tareas <span className="text-indigo-600 dark:text-indigo-400">sin complicarte</span>
+            </h1>
+            <p className="mt-4 max-w-xl text-lg text-pretty text-zinc-600 dark:text-zinc-400">
+              Proyectos, prioridades, fechas límite y un tablero kanban en un solo lugar.
+              Gratis y desde cualquier dispositivo.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link href={ROUTES.signup} className={buttonStyles({ size: "lg" })}>
+                Empieza gratis
+              </Link>
+              <Link href={ROUTES.login} className={buttonStyles({ variant: "secondary", size: "lg" })}>
+                Ya tengo cuenta
+              </Link>
+            </div>
+          </div>
+
+          <div
+            aria-hidden="true"
+            className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 shadow-xl shadow-zinc-200/50 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+            <div className="grid grid-cols-3 gap-3">
+              {PREVIEW_COLUMNS.map((column) => (
+                <div key={column.title} className="space-y-2">
+                  <p className="text-xs font-semibold text-zinc-500 uppercase">{column.title}</p>
+                  {column.tasks.map((task) => (
+                    <div
+                      key={task.t}
+                      className="rounded-lg border border-zinc-200 bg-white p-2.5 shadow-sm dark:border-zinc-700 dark:bg-zinc-800"
+                    >
+                      <p className="text-xs font-medium sm:text-sm">{task.t}</p>
+                      <span
+                        className={`mt-2 inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold sm:text-xs ${PRIORITY_STYLES[task.p]}`}
+                      >
+                        {task.p}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Funcionalidades */}
+        <section aria-labelledby="funcionalidades" className="border-t border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
+            <h2 id="funcionalidades" className="text-3xl font-bold tracking-tight">
+              Todo lo que necesitas, nada que sobre
+            </h2>
+            <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {FEATURES.map(({ icon: Icon, title, text }) => (
+                <li
+                  key={title}
+                  className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900"
+                >
+                  <span className="flex size-10 items-center justify-center rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                    <Icon className="size-5" aria-hidden="true" />
+                  </span>
+                  <h3 className="mt-4 font-semibold">{title}</h3>
+                  <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{text}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* Llamada final */}
+        <section className="mx-auto max-w-6xl px-4 py-16 text-center sm:py-20">
+          <h2 className="text-3xl font-bold tracking-tight">¿Listo para ordenar tu semana?</h2>
+          <p className="mt-3 text-zinc-600 dark:text-zinc-400">Crea tu cuenta en menos de un minuto.</p>
+          <Link href={ROUTES.signup} className={buttonStyles({ size: "lg", className: "mt-8" })}>
+            Crear cuenta gratis
+          </Link>
+        </section>
       </main>
-    </div>
+      <SiteFooter />
+    </>
   );
 }

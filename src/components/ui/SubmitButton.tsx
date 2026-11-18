@@ -1,3 +1,5 @@
+import { buttonStyles } from "./button";
+
 type SubmitButtonProps = {
   pending: boolean;
   children: React.ReactNode;
@@ -11,7 +13,7 @@ export function SubmitButton({ pending, children, pendingText = "Enviando…" }:
       type="submit"
       disabled={pending}
       aria-disabled={pending}
-      className="inline-flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
+      className={buttonStyles({ className: "w-full py-2.5" })}
     >
       {pending ? pendingText : children}
     </button>

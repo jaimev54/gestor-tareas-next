@@ -34,7 +34,7 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 1. ✅ Setup con create-next-app
 2. ✅ Supabase: proyecto (región East US), esquema con RLS en `supabase/migrations/` (ejecutado a mano en el SQL Editor) y clientes en `src/lib/supabase/` (`server.ts`, `client.ts`)
 3. ✅ Auth: registro, login, recuperar contraseña y protección de rutas (`src/proxy.ts`, `src/lib/auth/`, grupo `(auth)`, `/auth/confirm`)
-4. Layout y UI base: navegación, modo oscuro, responsive
+4. ✅ Layout y UI base: inicio pública, grupo `(app)` con barra de navegación, tema claro/oscuro/sistema, 404
 5. CRUD de proyectos/listas
 6. CRUD de tareas con Server Actions y validación con Zod (prioridad, fecha límite, etiquetas, subtareas)
 7. Filtros, búsqueda y orden sincronizados con la URL
@@ -55,6 +55,9 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 - `cacheComponents: true`: lo que lee cookies, `searchParams` o la hora va dentro de `<Suspense>`. `createClient()` de servidor ya llama a `connection()`.
 - `middleware` ahora se llama `proxy` (`src/proxy.ts`). Es solo la primera barrera: cada página/acción protegida usa `requireUser()`.
 - Formularios: Server Action + `useActionState`; validar con Zod; devolver `FormState` (`src/lib/forms.ts`).
+- Tema: `data-theme` en `<html>` lo pone `ThemeScript` antes de pintar; Tailwind usa `@custom-variant dark` sobre ese atributo (no la media query). Preferencia en localStorage.
+- Si el dev server sirve estilos viejos tras cambiar `globals.css`: parar el server, borrar `.next` y arrancar de nuevo.
+- Grupos de rutas: `(auth)` = tarjeta centrada; `(app)` = área privada con barra (`APP_NAV_LINKS` en `src/lib/routes.ts`).
 - Supabase Auth → URL Configuration: Site URL y Redirect URLs (`http://localhost:3000/**`; añadir la de producción en el deploy).
 
 ## Estándares de calidad
