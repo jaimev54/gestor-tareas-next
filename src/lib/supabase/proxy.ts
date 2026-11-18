@@ -3,6 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { DEFAULT_AFTER_LOGIN, GUEST_ONLY, PROTECTED_PREFIXES, ROUTES, matchesPrefix } from "@/lib/routes";
 
+import type { Database } from "@/types/database";
+
 import { supabaseEnv } from "./env";
 
 /**
@@ -16,7 +18,7 @@ import { supabaseEnv } from "./env";
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
-  const supabase = createServerClient(supabaseEnv.url, supabaseEnv.publishableKey, {
+  const supabase = createServerClient<Database>(supabaseEnv.url, supabaseEnv.publishableKey, {
     cookies: {
       getAll() {
         return request.cookies.getAll();

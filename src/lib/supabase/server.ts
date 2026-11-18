@@ -4,6 +4,8 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { connection } from "next/server";
 
+import type { Database } from "@/types/database";
+
 import { supabaseEnv } from "./env";
 
 /**
@@ -18,7 +20,7 @@ export async function createClient() {
   await connection();
   const cookieStore = await cookies();
 
-  return createServerClient(supabaseEnv.url, supabaseEnv.publishableKey, {
+  return createServerClient<Database>(supabaseEnv.url, supabaseEnv.publishableKey, {
     cookies: {
       getAll() {
         return cookieStore.getAll();

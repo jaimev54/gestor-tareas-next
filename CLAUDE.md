@@ -35,7 +35,7 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 2. ✅ Supabase: proyecto (región East US), esquema con RLS en `supabase/migrations/` (ejecutado a mano en el SQL Editor) y clientes en `src/lib/supabase/` (`server.ts`, `client.ts`)
 3. ✅ Auth: registro, login, recuperar contraseña y protección de rutas (`src/proxy.ts`, `src/lib/auth/`, grupo `(auth)`, `/auth/confirm`)
 4. ✅ Layout y UI base: inicio pública, grupo `(app)` con barra de navegación, tema claro/oscuro/sistema, 404
-5. CRUD de proyectos/listas
+5. ✅ CRUD de proyectos (`/proyectos`, `src/lib/projects/`); tipos de la base con `npm run db:types` (requiere `npx supabase login`)
 6. CRUD de tareas con Server Actions y validación con Zod (prioridad, fecha límite, etiquetas, subtareas)
 7. Filtros, búsqueda y orden sincronizados con la URL
 8. Tablero kanban con arrastrar y soltar

@@ -1,5 +1,7 @@
 import { createBrowserClient } from "@supabase/ssr";
 
+import type { Database } from "@/types/database";
+
 import { supabaseEnv } from "./env";
 
 /**
@@ -7,5 +9,5 @@ import { supabaseEnv } from "./env";
  * Usa la clave publishable: los datos los protege RLS en la base, no esta clave.
  */
 export function createClient() {
-  return createBrowserClient(supabaseEnv.url, supabaseEnv.publishableKey);
+  return createBrowserClient<Database>(supabaseEnv.url, supabaseEnv.publishableKey);
 }
