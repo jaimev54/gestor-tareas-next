@@ -10,3 +10,6 @@ if (!url || !publishableKey) {
 }
 
 export const supabaseEnv = { url, publishableKey };
+
+/** URL pública de la app, sin barra final. Se usa en los enlaces de los correos. */
+export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");

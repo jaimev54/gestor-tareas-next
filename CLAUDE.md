@@ -33,7 +33,7 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 ## Plan
 1. ✅ Setup con create-next-app
 2. ✅ Supabase: proyecto (región East US), esquema con RLS en `supabase/migrations/` (ejecutado a mano en el SQL Editor) y clientes en `src/lib/supabase/` (`server.ts`, `client.ts`)
-3. Auth: registro, login, recuperar contraseña y protección de rutas
+3. ✅ Auth: registro, login, recuperar contraseña y protección de rutas (`src/proxy.ts`, `src/lib/auth/`, grupo `(auth)`, `/auth/confirm`)
 4. Layout y UI base: navegación, modo oscuro, responsive
 5. CRUD de proyectos/listas
 6. CRUD de tareas con Server Actions y validación con Zod (prioridad, fecha límite, etiquetas, subtareas)
@@ -50,6 +50,12 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 - Valores: `status` ∈ `todo | in_progress | done`; `priority` ∈ `low | medium | high`. `project_id` null = Bandeja de entrada.
 - Borrar un proyecto borra sus tareas (cascade): pedir confirmación en la UI.
 - Cambios de esquema: nuevo archivo numerado en `supabase/migrations/` y ejecutarlo en el SQL Editor; nunca editar uno ya aplicado.
+
+## Next 16: cosas a recordar
+- `cacheComponents: true`: lo que lee cookies, `searchParams` o la hora va dentro de `<Suspense>`. `createClient()` de servidor ya llama a `connection()`.
+- `middleware` ahora se llama `proxy` (`src/proxy.ts`). Es solo la primera barrera: cada página/acción protegida usa `requireUser()`.
+- Formularios: Server Action + `useActionState`; validar con Zod; devolver `FormState` (`src/lib/forms.ts`).
+- Supabase Auth → URL Configuration: Site URL y Redirect URLs (`http://localhost:3000/**`; añadir la de producción en el deploy).
 
 ## Estándares de calidad
 - Componentes pequeños con props tipadas; Server Components por defecto, `"use client"` solo cuando haga falta
