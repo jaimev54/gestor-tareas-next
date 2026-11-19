@@ -43,7 +43,7 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 4. ✅ Layout y UI base: inicio pública, grupo `(app)` con barra de navegación, tema claro/oscuro/sistema, 404
 5. ✅ CRUD de proyectos (`/proyectos`, `src/lib/projects/`); tipos de la base con `npm run db:types` (requiere `npx supabase login`)
 6. ✅ CRUD de tareas (`/tareas`, `src/lib/tasks/`), etiquetas (`src/lib/tags/`, gestor en `/proyectos`) y subtareas; migración 0002 con la función `set_task_tags` (RPC)
-7. Filtros, búsqueda y orden sincronizados con la URL
+7. ✅ Filtros y búsqueda en la URL (`src/lib/tasks/filters.ts`, `TaskFiltersBar`); zona horaria del usuario en la cookie `tz` (`src/lib/today.ts`)
 8. Tablero kanban con arrastrar y soltar
 9. Dashboard con estadísticas
 10. Tests (Vitest + Playwright) y CI con GitHub Actions

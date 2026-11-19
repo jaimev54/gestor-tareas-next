@@ -1,6 +1,7 @@
 "use client";
 
 import { ListChecks } from "lucide-react";
+import Link from "next/link";
 import { useOptimistic, useTransition } from "react";
 
 import { TagBadge } from "@/components/tags/TagBadge";
@@ -9,6 +10,7 @@ import { COLOR_DOT } from "@/lib/colors";
 import type { Tag } from "@/lib/tags/queries";
 import { deleteTask, setTaskDone } from "@/lib/tasks/actions";
 import { PRIORITY_BADGE, PRIORITY_LABELS, STATUS_LABELS } from "@/lib/tasks/constants";
+import { tasksUrl } from "@/lib/tasks/filters";
 import type { Task, TaskProject } from "@/lib/tasks/queries";
 
 import { DueDateBadge } from "./DueDateBadge";
@@ -63,10 +65,14 @@ export function TaskItem({ task, projects, tags }: TaskItemProps) {
 
         <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
           {task.project && (
-            <span className="inline-flex items-center gap-1.5 text-xs text-zinc-600 dark:text-zinc-400">
+            <Link
+              href={tasksUrl({ project: task.project.id })}
+              title={`Ver tareas de ${task.project.name}`}
+              className="inline-flex items-center gap-1.5 text-xs text-zinc-600 hover:text-indigo-700 hover:underline dark:text-zinc-400 dark:hover:text-indigo-300"
+            >
               <span aria-hidden="true" className={`size-2 rounded-full ${COLOR_DOT[task.project.color]}`} />
               {task.project.name}
-            </span>
+            </Link>
           )}
           {!optimisticDone && (
             <span className={`rounded px-1.5 py-0.5 text-xs font-medium ${PRIORITY_BADGE[task.priority]}`}>
@@ -93,7 +99,7 @@ export function TaskItem({ task, projects, tags }: TaskItemProps) {
           <ul aria-label="Etiquetas" className="mt-2 flex flex-wrap gap-1.5">
             {task.tags.map((tag) => (
               <li key={tag.id}>
-                <TagBadge name={tag.name} color={tag.color} />
+                <TagBadge name={tag.name} color={tag.color} href={tasksUrl({ tag: tag.id })} />
               </li>
             ))}
           </ul>

@@ -2,8 +2,18 @@ import "server-only";
 
 import { requireUser } from "@/lib/auth/user";
 import { type ColorName, toColorName } from "@/lib/colors";
+import { addDaysIso } from "@/lib/timezone";
+import { getUserToday } from "@/lib/today";
 
 import { PRIORITY_RANK, RECENT_DONE_LIMIT, type TaskPriority, type TaskStatus } from "./constants";
+import {
+  EMPTY_FILTERS,
+  INBOX,
+  PRIORITY_PARAM,
+  STATUS_PARAM,
+  type TaskFilters,
+  sanitizeSearch,
+} from "./filters";
 
 export type TaskProject = { id: string; name: string; color: ColorName };
 export type TaskTag = { id: string; name: string; color: ColorName };
@@ -82,28 +92,73 @@ function compareOpenTasks(a: Task, b: Task) {
   return PRIORITY_RANK[b.priority] - PRIORITY_RANK[a.priority];
 }
 
-/** Tareas del usuario: pendientes (todas) y completadas (las más recientes). */
-export async function getTasks() {
-  const { supabase } = await requireUser();
+/** Cuántas completadas mostrar cuando se filtra explícitamente por "hecha". */
+const DONE_FILTER_LIMIT = 100;
 
-  // Dos consultas en paralelo (como forkJoin en RxJS).
+/**
+ * Tareas del usuario según los filtros de la URL:
+ * pendientes (todas las que coinciden) y completadas (las más recientes).
+ */
+export async function getTasks(filters: TaskFilters = EMPTY_FILTERS) {
+  const { supabase } = await requireUser();
+  const today = filters.due ? await getUserToday() : null;
+
+  // Filtro por etiqueta: primero los ids de las tareas que la tienen.
+  let taggedIds: string[] | null = null;
+  if (filters.tag) {
+    const { data, error } = await supabase.from("task_tags").select("task_id").eq("tag_id", filters.tag);
+    if (error) throw new Error(`No se pudieron cargar las tareas: ${error.message}`);
+    taggedIds = data.map((row) => row.task_id);
+  }
+
+  const status = filters.status ? STATUS_PARAM[filters.status] : null;
+  const showOpen = status !== "done";
+  // "Vencidas" solo tiene sentido para tareas sin terminar.
+  const showDone = (status === null || status === "done") && filters.due !== "vencidas";
+
+  // Construye la consulta añadiendo una condición por filtro (como un query builder de Eloquent).
+  const filteredQuery = () => {
+    let query = supabase.from("tasks").select(TASK_COLUMNS, { count: "exact" });
+
+    if (filters.project === INBOX) query = query.is("project_id", null);
+    else if (filters.project) query = query.eq("project_id", filters.project);
+
+    if (taggedIds) query = query.in("id", taggedIds);
+    if (filters.priority) query = query.eq("priority", PRIORITY_PARAM[filters.priority]);
+
+    const term = sanitizeSearch(filters.q);
+    if (term) query = query.or(`title.ilike.%${term}%,description.ilike.%${term}%`);
+
+    if (today) {
+      if (filters.due === "vencidas") query = query.lt("due_date", today);
+      if (filters.due === "hoy") query = query.eq("due_date", today);
+      if (filters.due === "semana") query = query.gte("due_date", today).lte("due_date", addDaysIso(today, 6));
+    }
+    if (filters.due === "sin-fecha") query = query.is("due_date", null);
+
+    return query;
+  };
+
+  // Dos consultas en paralelo (como forkJoin en RxJS); se omite la que no hace falta.
   const [open, done] = await Promise.all([
-    supabase.from("tasks").select(TASK_COLUMNS).neq("status", "done"),
-    supabase
-      .from("tasks")
-      .select(TASK_COLUMNS, { count: "exact" })
-      .eq("status", "done")
-      .order("completed_at", { ascending: false })
-      .limit(RECENT_DONE_LIMIT),
+    showOpen ? (status ? filteredQuery().eq("status", status) : filteredQuery().neq("status", "done")) : null,
+    showDone
+      ? filteredQuery()
+          .eq("status", "done")
+          .order("completed_at", { ascending: false })
+          .limit(status === "done" ? DONE_FILTER_LIMIT : RECENT_DONE_LIMIT)
+      : null,
   ]);
 
-  if (open.error) throw new Error(`No se pudieron cargar las tareas: ${open.error.message}`);
-  if (done.error) throw new Error(`No se pudieron cargar las tareas: ${done.error.message}`);
+  if (open?.error) throw new Error(`No se pudieron cargar las tareas: ${open.error.message}`);
+  if (done?.error) throw new Error(`No se pudieron cargar las tareas: ${done.error.message}`);
 
   return {
-    open: open.data.map(toTask).sort(compareOpenTasks),
-    done: done.data.map(toTask),
-    doneTotal: done.count ?? done.data.length,
+    showOpen,
+    showDone,
+    open: (open?.data ?? []).map(toTask).sort(compareOpenTasks),
+    done: (done?.data ?? []).map(toTask),
+    doneTotal: done?.count ?? done?.data?.length ?? 0,
   };
 }
 

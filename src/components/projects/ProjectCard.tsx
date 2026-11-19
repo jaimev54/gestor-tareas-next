@@ -1,10 +1,12 @@
 "use client";
 
 import { Pencil } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useState } from "react";
 
 import { COLOR_BORDER_TOP } from "@/lib/colors";
 import type { ProjectSummary } from "@/lib/projects/queries";
+import { tasksUrl } from "@/lib/tasks/filters";
 
 import { DeleteProjectButton } from "./DeleteProjectButton";
 import { ProjectForm } from "./ProjectForm";
@@ -26,7 +28,14 @@ export function ProjectCard({ project }: { project: ProjectSummary }) {
       ) : (
         <>
           <div className="flex items-start justify-between gap-2">
-            <h2 className="min-w-0 text-lg font-semibold break-words">{project.name}</h2>
+            <h2 className="min-w-0 text-lg font-semibold break-words">
+              <Link
+                href={tasksUrl({ project: project.id })}
+                className="hover:text-indigo-700 hover:underline dark:hover:text-indigo-300"
+              >
+                {project.name}
+              </Link>
+            </h2>
             <div className="flex shrink-0 items-center">
               <button
                 type="button"

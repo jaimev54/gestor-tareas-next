@@ -14,7 +14,13 @@ import type { TaskProject } from "@/lib/tasks/queries";
 import { PRIORITY_OPTIONS, projectOptions } from "./options";
 
 /** Alta rápida: escribir el título y Enter. Proyecto, prioridad y fecha son opcionales. */
-export function TaskQuickAdd({ projects }: { projects: TaskProject[] }) {
+type TaskQuickAddProps = {
+  projects: TaskProject[];
+  /** Proyecto propuesto (p. ej. el que está filtrado en la lista). */
+  defaultProjectId?: string;
+};
+
+export function TaskQuickAdd({ projects, defaultProjectId = "" }: TaskQuickAddProps) {
   const [state, formAction, pending] = useActionState(createTask, initialFormState);
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -58,11 +64,13 @@ export function TaskQuickAdd({ projects }: { projects: TaskProject[] }) {
 
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
         <SelectField
+          // key: un select no controlado ignora cambios de defaultValue; al cambiar el filtro se vuelve a montar.
+          key={defaultProjectId}
           id="new-task-project"
           label="Proyecto"
           name="projectId"
           options={projectOptions(projects)}
-          defaultValue={values?.projectId ?? ""}
+          defaultValue={values?.projectId ?? defaultProjectId}
           errors={state.fieldErrors?.projectId}
         />
         <SelectField
