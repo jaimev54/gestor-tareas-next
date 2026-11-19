@@ -57,7 +57,7 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 9. ✅ Panel `/panel` con estadísticas (`src/lib/dashboard/`, `src/components/dashboard/`): cálculos puros en `stats.ts`, gráficos en HTML/CSS sin librería
 10. ✅ Tests: Vitest (`src/**/*.test.ts`) y Playwright (`e2e/`, build en `.next-e2e`, puerto 3100); CI en `.github/workflows/ci.yml`
 11. ✅ Deploy en Vercel, cabeceras de seguridad, keep-alive de Supabase (migración 0004 + Action) y cuenta demo (`demo@example.com`, migración 0005, `DEMO_PASSWORD` solo en servidor). Sin dominio propio por ahora: el correo de Supabase solo llega a miembros de la organización
-12. README con capturas
+12. ✅ README con capturas (`docs/screenshots/`, se regeneran con `npm run screenshots` desde la demo de producción)
 
 ## Base de datos
 - Tablas: `profiles`, `projects`, `tasks`, `subtasks`, `tags`, `task_tags`. Identificadores en inglés; la UI en español.
