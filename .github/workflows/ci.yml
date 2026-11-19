@@ -1,0 +1,69 @@
+# Integración continua: en cada push a main/dev y en cada pull request,
+# comprueba que el proyecto compila y que los tests pasan.
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+# Si llega un push nuevo a la misma rama, cancela la ejecución anterior (ahorra minutos).
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+# Valores de relleno: el build y los tests e2e no llaman a Supabase
+# (solo comprueban páginas públicas y validaciones antes de enviar).
+env:
+  NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder
+  NEXT_PUBLIC_SITE_URL: http://localhost:3100
+  NEXT_TELEMETRY_DISABLED: 1
+
+jobs:
+  checks:
+    name: Lint, tipos, tests y build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Tipos
+        run: npm run typecheck
+      - name: Tests unitarios (Vitest)
+        run: npm test
+      - name: Build
+        run: npm run build
+
+  e2e:
+    name: Tests e2e (Playwright)
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Instalar Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Tests e2e
+        run: npx playwright test
+      - name: Guardar informe si falla
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

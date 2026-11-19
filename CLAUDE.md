@@ -30,6 +30,9 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 - `npm run start` — sirve el build
 - `npm run lint` — ESLint
 - `npm run db:types` — regenerar `src/types/database.ts` tras cambiar el esquema
+- `npm test` — tests unitarios (Vitest); `npm run test:watch` en modo vigilancia
+- `npm run test:e2e` — tests e2e (Playwright). Compila en `.next-e2e` y usa el puerto 3100: se puede ejecutar con `npm run dev` encendido
+- `npm run typecheck` — comprobación de tipos
 
 ## Repositorio
 - GitHub: https://github.com/jaimev54/gestor-tareas-next (público)
@@ -46,7 +49,7 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 7. ✅ Filtros y búsqueda en la URL (`src/lib/tasks/filters.ts`, `TaskFiltersBar`); zona horaria del usuario en la cookie `tz` (`src/lib/today.ts`)
 8. ✅ Tablero kanban `/tablero` con dnd-kit (`src/components/kanban/`); migración 0003 con la función `move_task` (estado + orden)
 9. ✅ Panel `/panel` con estadísticas (`src/lib/dashboard/`, `src/components/dashboard/`): cálculos puros en `stats.ts`, gráficos en HTML/CSS sin librería
-10. Tests (Vitest + Playwright) y CI con GitHub Actions
+10. ✅ Tests: Vitest (`src/**/*.test.ts`) y Playwright (`e2e/`, build en `.next-e2e`, puerto 3100); CI en `.github/workflows/ci.yml`
 11. Deploy en Vercel, dominio propio y keep-alive de Supabase
 12. README con capturas
 

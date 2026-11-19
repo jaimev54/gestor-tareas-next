@@ -43,3 +43,9 @@ next-env.d.ts
 
 # archivos personales con secretos
 CONTRASEÑA*.txt
+
+# tests
+/.next-e2e/
+/playwright-report/
+/test-results/
+/blob-report/
