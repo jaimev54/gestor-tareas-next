@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { TaskFiltersBar } from "@/components/tasks/TaskFiltersBar";
 import { TaskItem } from "@/components/tasks/TaskItem";
 import { TaskQuickAdd } from "@/components/tasks/TaskQuickAdd";
+import { ViewSwitch } from "@/components/tasks/ViewSwitch";
 import { type Tag, getTags } from "@/lib/tags/queries";
 import { INBOX, countActiveFilters, parseTaskFilters, tasksUrl } from "@/lib/tasks/filters";
 import { type Task, type TaskProject, getProjectOptions, getTasks } from "@/lib/tasks/queries";
@@ -49,6 +50,10 @@ async function TasksContent({ searchParams }: PageProps<"/tareas">) {
 
   return (
     <div className="space-y-8">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-3xl font-semibold tracking-tight">Mis tareas</h1>
+        <ViewSwitch current="list" filters={filters} />
+      </div>
       <TaskQuickAdd projects={projects} defaultProjectId={quickAddProject} />
       <TaskFiltersBar filters={filters} projects={projects} tags={tags} />
 
@@ -118,6 +123,7 @@ async function TasksContent({ searchParams }: PageProps<"/tareas">) {
 function TasksSkeleton() {
   return (
     <div className="space-y-3" aria-hidden="true">
+      <div className="h-10 w-48 animate-pulse rounded-lg bg-zinc-100 dark:bg-zinc-900" />
       <div className="h-36 animate-pulse rounded-2xl bg-zinc-100 dark:bg-zinc-900" />
       <div className="h-24 animate-pulse rounded-2xl bg-zinc-100 dark:bg-zinc-900" />
       {[0, 1, 2].map((i) => (
@@ -129,8 +135,7 @@ function TasksSkeleton() {
 
 export default function TasksPage(props: PageProps<"/tareas">) {
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <h1 className="text-3xl font-semibold tracking-tight">Mis tareas</h1>
+    <div className="mx-auto max-w-3xl">
       {/* searchParams solo se conoce al recibir la petición: va dentro de <Suspense> */}
       <Suspense fallback={<TasksSkeleton />}>
         <TasksContent {...props} />

@@ -8,11 +8,13 @@ export const ROUTES = {
   authConfirm: "/auth/confirm",
   tasks: "/tareas",
   projects: "/proyectos",
+  board: "/tablero",
 } as const;
 
 /** Enlaces de la barra de navegación del área privada (se irán sumando en cada paso). */
 export const APP_NAV_LINKS = [
   { href: ROUTES.tasks, label: "Tareas" },
+  { href: ROUTES.board, label: "Tablero" },
   { href: ROUTES.projects, label: "Proyectos" },
 ] as const;
 
@@ -20,7 +22,7 @@ export const APP_NAV_LINKS = [
 export const DEFAULT_AFTER_LOGIN = ROUTES.tasks;
 
 /** Rutas que exigen sesión (también sus subrutas). */
-export const PROTECTED_PREFIXES = [ROUTES.tasks, ROUTES.projects, ROUTES.resetPassword];
+export const PROTECTED_PREFIXES = [ROUTES.tasks, ROUTES.board, ROUTES.projects, ROUTES.resetPassword];
 
 /** Rutas solo para visitantes: con sesión no tiene sentido verlas. */
 export const GUEST_ONLY = [ROUTES.login, ROUTES.signup, ROUTES.forgotPassword];

@@ -218,6 +218,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      move_task: {
+        Args: { p_ordered_ids: string[]; p_status: string; p_task_id: string }
+        Returns: undefined
+      }
       set_task_tags: {
         Args: { p_tag_ids: string[]; p_task_id: string }
         Returns: undefined

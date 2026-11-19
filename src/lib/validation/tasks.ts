@@ -44,3 +44,10 @@ export const updateTaskSchema = z.object({
   priority,
   dueDate,
 });
+
+/** Movimiento en el tablero: tarea, columna destino y orden completo de esa columna. */
+export const moveTaskSchema = z.object({
+  taskId: z.uuid(),
+  status: z.enum(TASK_STATUSES),
+  orderedIds: z.array(z.uuid()).min(1).max(500),
+});

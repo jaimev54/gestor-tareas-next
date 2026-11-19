@@ -32,13 +32,23 @@ type TaskFiltersBarProps = {
   filters: TaskFilters;
   projects: TaskProject[];
   tags: Tag[];
+  /** Página donde se aplican los filtros: /tareas (lista) o /tablero. */
+  basePath?: string;
+  /** En el tablero el estado ya son las columnas: no se muestra ese filtro. */
+  hideStatus?: boolean;
 };
 
 /**
  * Búsqueda y filtros. No guarda estado propio: la fuente de verdad es la URL.
  * Cambiar un filtro = navegar a /tareas?... y el servidor devuelve la lista filtrada.
  */
-export function TaskFiltersBar({ filters: urlFilters, projects, tags }: TaskFiltersBarProps) {
+export function TaskFiltersBar({
+  filters: urlFilters,
+  projects,
+  tags,
+  basePath = "/tareas",
+  hideStatus = false,
+}: TaskFiltersBarProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   // Los selects muestran el valor nuevo al instante, mientras el servidor filtra.
@@ -57,7 +67,7 @@ export function TaskFiltersBar({ filters: urlFilters, projects, tags }: TaskFilt
     // replace (no push): filtrar no debería llenar el historial del botón "Atrás".
     startTransition(() => {
       setOptimisticFilters(next);
-      router.replace(tasksUrl(next), { scroll: false });
+      router.replace(tasksUrl(next, basePath), { scroll: false });
     });
   }
 
@@ -137,7 +147,7 @@ export function TaskFiltersBar({ filters: urlFilters, projects, tags }: TaskFilt
 
       <div
         id="task-filters"
-        className={`${showMobileFilters ? "grid" : "hidden"} grid-cols-2 gap-3 sm:grid sm:grid-cols-3 lg:grid-cols-5`}
+        className={`${showMobileFilters ? "grid" : "hidden"} grid-cols-2 gap-3 sm:grid sm:grid-cols-3 ${hideStatus ? "lg:grid-cols-4" : "lg:grid-cols-5"}`}
       >
         <SelectField
           id="filter-project"
@@ -172,20 +182,22 @@ export function TaskFiltersBar({ filters: urlFilters, projects, tags }: TaskFilt
               .map(([param, value]) => ({ value: param, label: PRIORITY_LABELS[value] })),
           ]}
         />
-        <SelectField
-          id="filter-status"
-          label="Estado"
-          name="estado"
-          value={filters.status}
-          onChange={(e) => navigate({ ...filters, status: e.target.value as TaskFilters["status"] })}
-          options={[
-            { value: "", label: "Todos" },
-            ...Object.entries(STATUS_PARAM).map(([param, value]) => ({
-              value: param,
-              label: STATUS_LABELS[value],
-            })),
-          ]}
-        />
+        {!hideStatus && (
+          <SelectField
+            id="filter-status"
+            label="Estado"
+            name="estado"
+            value={filters.status}
+            onChange={(e) => navigate({ ...filters, status: e.target.value as TaskFilters["status"] })}
+            options={[
+              { value: "", label: "Todos" },
+              ...Object.entries(STATUS_PARAM).map(([param, value]) => ({
+                value: param,
+                label: STATUS_LABELS[value],
+              })),
+            ]}
+          />
+        )}
         <SelectField
           id="filter-due"
           label="Fecha límite"

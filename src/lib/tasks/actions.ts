@@ -7,7 +7,33 @@ import { requireUser } from "@/lib/auth/user";
 import { type FormState, formDataToObject, validationError } from "@/lib/forms";
 import { idSchema } from "@/lib/validation/projects";
 import { tagIdsSchema } from "@/lib/validation/tags";
-import { createTaskSchema, updateTaskSchema } from "@/lib/validation/tasks";
+import { createTaskSchema, moveTaskSchema, updateTaskSchema } from "@/lib/validation/tasks";
+
+/**
+ * Tablero kanban: mueve una tarea a una columna (estado) y guarda el orden de esa columna.
+ * `orderedIds` es la columna destino completa, ya con la tarea en su nuevo sitio.
+ */
+export async function moveTask(taskId: string, status: string, orderedIds: string[]): Promise<FormState> {
+  const parsed = moveTaskSchema.safeParse({ taskId, status, orderedIds });
+  if (!parsed.success || !parsed.data.orderedIds.includes(parsed.data.taskId)) {
+    return { status: "error", message: "Movimiento no válido." };
+  }
+
+  const { supabase } = await requireUser();
+  // RPC (migración 0003): cambia el estado y reescribe el orden en una sola transacción.
+  const { error } = await supabase.rpc("move_task", {
+    p_task_id: parsed.data.taskId,
+    p_status: parsed.data.status,
+    p_ordered_ids: parsed.data.orderedIds,
+  });
+  if (error) {
+    console.error("[tasks] move_task", error.code, error.message);
+    return { status: "error", message: "No se pudo mover la tarea. Inténtalo de nuevo." };
+  }
+
+  refresh();
+  return { status: "success" };
+}
 
 // CRUD de tareas. Mismo patrón que proyectos: sesión → Zod → consulta (RLS) → refresh().
 // completed_at no se toca aquí: lo rellena/limpia un trigger según el estado.
