@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 
 import { AppNavLinks } from "@/components/layout/AppNavLinks";
+import { DemoBanner } from "@/components/layout/DemoBanner";
 import { SiteLogo } from "@/components/layout/SiteLogo";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { TimezoneSync } from "@/components/layout/TimezoneSync";
@@ -28,6 +29,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
+      <Suspense fallback={null}>
+        <DemoBanner />
+      </Suspense>
       <TimezoneSync />
       <main id="contenido" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         {children}

@@ -222,6 +222,8 @@ export type Database = {
         Args: { p_ordered_ids: string[]; p_status: string; p_task_id: string }
         Returns: undefined
       }
+      ping: { Args: never; Returns: string }
+      reset_demo_data: { Args: never; Returns: undefined }
       set_task_tags: {
         Args: { p_tag_ids: string[]; p_task_id: string }
         Returns: undefined

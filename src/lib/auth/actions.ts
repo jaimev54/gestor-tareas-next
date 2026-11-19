@@ -3,6 +3,7 @@
 import type { AuthError } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 
+import { DEMO_EMAIL, isDemoEmail } from "@/lib/auth/demo";
 import { type FormState, formDataToObject, validationError, withoutSecrets } from "@/lib/forms";
 import { DEFAULT_AFTER_LOGIN, ROUTES, safeNextPath } from "@/lib/routes";
 import { siteUrl } from "@/lib/supabase/env";
@@ -31,6 +32,28 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
   }
 
   redirect(safeNextPath(values.next));
+}
+
+/**
+ * "Probar la demo": entra con la cuenta demo y reinicia sus datos de ejemplo.
+ * La contraseña está solo en el servidor (DEMO_PASSWORD); el navegador nunca la ve.
+ */
+export async function loginAsDemo(_prev: FormState): Promise<FormState> {
+  const password = process.env.DEMO_PASSWORD;
+  if (!password) return { status: "error", message: "La demo no está disponible en este momento." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email: DEMO_EMAIL, password });
+  if (error) {
+    console.error("[auth] demo", error.code, error.message);
+    return { status: "error", message: "No se pudo entrar a la demo. Inténtalo de nuevo." };
+  }
+
+  // Datos de ejemplo frescos para cada visitante (función reset_demo_data, migración 0005).
+  const { error: resetError } = await supabase.rpc("reset_demo_data");
+  if (resetError) console.error("[auth] reset_demo_data", resetError.code, resetError.message);
+
+  redirect(DEFAULT_AFTER_LOGIN);
 }
 
 export async function signup(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -90,6 +113,11 @@ export async function updatePassword(_prev: FormState, formData: FormData): Prom
   if (!parsed.success) return validationError(parsed.error, {});
 
   const supabase = await createClient();
+  // La cuenta demo es compartida: nadie debe poder cambiarle la contraseña.
+  const { data: claims } = await supabase.auth.getClaims();
+  if (isDemoEmail(claims?.claims.email as string | undefined)) {
+    return { status: "error", message: "La contraseña de la cuenta demo no se puede cambiar." };
+  }
   const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
   if (error) return { status: "error", message: authErrorMessage(error) };
 

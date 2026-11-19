@@ -8,7 +8,8 @@ Gestor de tareas full-stack. Es el **proyecto 2 de 3** del portafolio de Jaime (
 Objetivo doble: (1) una app que se vea profesional para reclutadores y (2) que Jaime **aprenda** cada pieza. Se trabaja paso a paso.
 
 ## Cómo trabajar con Jaime
-- Responde siempre en **español**, de forma concisa y directa. No cambies más de lo que se pide.
+- Responde **SIEMPRE en español**: también los avisos intermedios, los resúmenes y las explicaciones de errores, aunque acabes de leer logs o documentación en inglés. Es la queja que más se ha repetido.
+- Sé conciso y directo. No cambies más de lo que se pide.
 - Antes de crear o modificar archivos, explica en 1-3 líneas **qué hace y por qué**.
 - Un paso a la vez. Compara con Angular, .NET o Laravel cuando ayude.
 - Si algo falla, pide la captura de la consola o del navegador.
@@ -34,6 +35,11 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 - `npm run test:e2e` — tests e2e (Playwright). Compila en `.next-e2e` y usa el puerto 3100: se puede ejecutar con `npm run dev` encendido
 - `npm run typecheck` — comprobación de tipos
 
+## Producción
+- App: https://gestor-tareas-next-fnfa.vercel.app (Vercel, despliega `main` automáticamente)
+- Variables en Vercel (Settings → Environments → Production), tipo **Config** (no Secret: las `NEXT_PUBLIC_` son públicas por diseño)
+- Supabase → Auth → URL Configuration: Site URL = la de producción; Redirect URLs = producción `/**` y `http://localhost:3000/**`
+
 ## Repositorio
 - GitHub: https://github.com/jaimev54/gestor-tareas-next (público)
 - Ramas: `main` (lo terminado; Vercel desplegará desde aquí) y `dev` (trabajo diario). Commits en `dev`; merge a `main` al cerrar cada paso o cuando Jaime lo pida.
@@ -50,7 +56,7 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 8. ✅ Tablero kanban `/tablero` con dnd-kit (`src/components/kanban/`); migración 0003 con la función `move_task` (estado + orden)
 9. ✅ Panel `/panel` con estadísticas (`src/lib/dashboard/`, `src/components/dashboard/`): cálculos puros en `stats.ts`, gráficos en HTML/CSS sin librería
 10. ✅ Tests: Vitest (`src/**/*.test.ts`) y Playwright (`e2e/`, build en `.next-e2e`, puerto 3100); CI en `.github/workflows/ci.yml`
-11. Deploy en Vercel, dominio propio y keep-alive de Supabase
+11. ✅ Deploy en Vercel, cabeceras de seguridad, keep-alive de Supabase (migración 0004 + Action) y cuenta demo (`demo@example.com`, migración 0005, `DEMO_PASSWORD` solo en servidor). Sin dominio propio por ahora: el correo de Supabase solo llega a miembros de la organización
 12. README con capturas
 
 ## Base de datos

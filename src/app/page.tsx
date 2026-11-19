@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { DemoButton } from "@/components/auth/DemoButton";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { buttonStyles } from "@/components/ui/button";
@@ -61,6 +62,9 @@ const PRIORITY_STYLES: Record<string, string> = {
 };
 
 export default function HomePage() {
+  // Solo se lee si existe (true/false): la contraseña nunca llega al HTML ni al navegador.
+  const demoEnabled = Boolean(process.env.DEMO_PASSWORD);
+
   return (
     <>
       <PublicHeader />
@@ -79,10 +83,20 @@ export default function HomePage() {
               <Link href={ROUTES.signup} className={buttonStyles({ size: "lg" })}>
                 Empieza gratis
               </Link>
-              <Link href={ROUTES.login} className={buttonStyles({ variant: "secondary", size: "lg" })}>
-                Ya tengo cuenta
-              </Link>
+              {/* Si la demo está configurada, es la segunda opción: probar sin registrarse. */}
+              {demoEnabled ? (
+                <DemoButton variant="secondary" size="lg" />
+              ) : (
+                <Link href={ROUTES.login} className={buttonStyles({ variant: "secondary", size: "lg" })}>
+                  Ya tengo cuenta
+                </Link>
+              )}
             </div>
+            {demoEnabled && (
+              <p className="mt-3 text-sm text-zinc-500">
+                La demo trae datos de ejemplo y no necesita correo ni contraseña.
+              </p>
+            )}
           </div>
 
           <div

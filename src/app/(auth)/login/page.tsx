@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 import { AuthHeader } from "@/components/auth/AuthHeader";
+import { DemoButton } from "@/components/auth/DemoButton";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { ROUTES } from "@/lib/routes";
 
@@ -34,6 +35,15 @@ export default function LoginPage(props: PageProps<"/login">) {
       <Suspense fallback={<LoginForm />}>
         <LoginFormWithParams {...props} />
       </Suspense>
+      {process.env.DEMO_PASSWORD && (
+        <>
+          <div className="my-6 flex items-center gap-3 text-xs text-zinc-500" aria-hidden="true">
+            <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />o
+            <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+          </div>
+          <DemoButton />
+        </>
+      )}
       <p className="mt-6 text-center text-sm text-zinc-600 dark:text-zinc-400">
         ¿No tienes cuenta?{" "}
         <Link href={ROUTES.signup} className="font-medium text-indigo-600 hover:underline dark:text-indigo-400">
