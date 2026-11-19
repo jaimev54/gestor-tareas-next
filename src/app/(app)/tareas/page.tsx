@@ -4,6 +4,7 @@ import { Suspense } from "react";
 
 import { TaskItem } from "@/components/tasks/TaskItem";
 import { TaskQuickAdd } from "@/components/tasks/TaskQuickAdd";
+import { getTags } from "@/lib/tags/queries";
 import { getProjectOptions, getTasks } from "@/lib/tasks/queries";
 
 export const metadata: Metadata = {
@@ -12,8 +13,12 @@ export const metadata: Metadata = {
 };
 
 async function TasksContent() {
-  // Tareas y proyectos en paralelo.
-  const [{ open, done, doneTotal }, projects] = await Promise.all([getTasks(), getProjectOptions()]);
+  // Tareas, proyectos y etiquetas en paralelo.
+  const [{ open, done, doneTotal }, projects, tags] = await Promise.all([
+    getTasks(),
+    getProjectOptions(),
+    getTags(),
+  ]);
 
   return (
     <div className="space-y-8">
@@ -37,7 +42,7 @@ async function TasksContent() {
           <ul className="space-y-2">
             {open.map((task) => (
               <li key={task.id}>
-                <TaskItem task={task} projects={projects} />
+                <TaskItem task={task} projects={projects} tags={tags} />
               </li>
             ))}
           </ul>
@@ -56,7 +61,7 @@ async function TasksContent() {
           <ul className="space-y-2">
             {done.map((task) => (
               <li key={task.id}>
-                <TaskItem task={task} projects={projects} />
+                <TaskItem task={task} projects={projects} tags={tags} />
               </li>
             ))}
           </ul>

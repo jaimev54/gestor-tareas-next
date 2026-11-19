@@ -218,7 +218,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      set_task_tags: {
+        Args: { p_tag_ids: string[]; p_task_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

@@ -6,6 +6,7 @@ import { refresh } from "next/cache";
 import { requireUser } from "@/lib/auth/user";
 import { type FormState, formDataToObject, validationError } from "@/lib/forms";
 import { idSchema } from "@/lib/validation/projects";
+import { tagIdsSchema } from "@/lib/validation/tags";
 import { createTaskSchema, updateTaskSchema } from "@/lib/validation/tasks";
 
 // CRUD de tareas. Mismo patrón que proyectos: sesión → Zod → consulta (RLS) → refresh().
@@ -37,6 +38,9 @@ export async function updateTask(
   if (!id.success) return { status: "error", message: "Tarea no válida." };
   const parsed = updateTaskSchema.safeParse(values);
   if (!parsed.success) return validationError(parsed.error, values);
+  // Las casillas de etiquetas mandan varios valores con el mismo nombre: getAll, no get.
+  const tagIds = tagIdsSchema.safeParse(formData.getAll("tagIds"));
+  if (!tagIds.success) return validationError(tagIds.error, values);
 
   const { supabase } = await requireUser();
   const { title, description, projectId, status, priority, dueDate } = parsed.data;
@@ -47,6 +51,16 @@ export async function updateTask(
     .select("id");
   if (error) return dbError(error, values);
   if (data.length === 0) return { status: "error", message: "No se encontró la tarea." };
+
+  // RPC = llamar a una función de Postgres (migración 0002). Sincroniza las etiquetas en una transacción.
+  const { error: tagsError } = await supabase.rpc("set_task_tags", {
+    p_task_id: id.data,
+    p_tag_ids: tagIds.data,
+  });
+  if (tagsError) {
+    console.error("[tasks] set_task_tags", tagsError.code, tagsError.message);
+    return { status: "error", message: "Se guardó la tarea, pero no las etiquetas.", values };
+  }
 
   refresh();
   return { status: "success", message: "Cambios guardados." };

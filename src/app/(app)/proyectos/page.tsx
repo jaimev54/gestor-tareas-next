@@ -4,10 +4,17 @@ import { Suspense } from "react";
 
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { ProjectForm } from "@/components/projects/ProjectForm";
+import { TagManager } from "@/components/tags/TagManager";
 import { getProjects } from "@/lib/projects/queries";
+import { getTags } from "@/lib/tags/queries";
+
+async function Tags() {
+  const tags = await getTags();
+  return <TagManager tags={tags} />;
+}
 
 export const metadata: Metadata = {
-  title: "Proyectos",
+  title: "Proyectos y etiquetas",
   robots: { index: false },
 };
 
@@ -66,14 +73,28 @@ export default function ProjectsPage() {
         </Suspense>
       </section>
 
-      <aside
-        aria-labelledby="new-project-title"
-        className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 lg:sticky lg:top-24 dark:border-zinc-800 dark:bg-zinc-900/50"
-      >
-        <h2 id="new-project-title" className="mb-4 text-lg font-semibold">
-          Nuevo proyecto
-        </h2>
-        <ProjectForm mode="create" />
+      <aside className="space-y-6 lg:sticky lg:top-24">
+        <section
+          aria-labelledby="new-project-title"
+          className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-900/50"
+        >
+          <h2 id="new-project-title" className="mb-4 text-lg font-semibold">
+            Nuevo proyecto
+          </h2>
+          <ProjectForm mode="create" />
+        </section>
+
+        <section
+          aria-labelledby="tags-title"
+          className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-900/50"
+        >
+          <h2 id="tags-title" className="mb-4 text-lg font-semibold">
+            Etiquetas
+          </h2>
+          <Suspense fallback={<div className="h-24 animate-pulse rounded-lg bg-zinc-100 dark:bg-zinc-800" />}>
+            <Tags />
+          </Suspense>
+        </section>
       </aside>
     </div>
   );

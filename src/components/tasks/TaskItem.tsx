@@ -1,9 +1,12 @@
 "use client";
 
+import { ListChecks } from "lucide-react";
 import { useOptimistic, useTransition } from "react";
 
+import { TagBadge } from "@/components/tags/TagBadge";
 import { ConfirmDeleteButton } from "@/components/ui/ConfirmDeleteButton";
 import { COLOR_DOT } from "@/lib/colors";
+import type { Tag } from "@/lib/tags/queries";
 import { deleteTask, setTaskDone } from "@/lib/tasks/actions";
 import { PRIORITY_BADGE, PRIORITY_LABELS, STATUS_LABELS } from "@/lib/tasks/constants";
 import type { Task, TaskProject } from "@/lib/tasks/queries";
@@ -14,9 +17,11 @@ import { TaskEditDialog } from "./TaskEditDialog";
 type TaskItemProps = {
   task: Task;
   projects: TaskProject[];
+  tags: Tag[];
 };
 
-export function TaskItem({ task, projects }: TaskItemProps) {
+export function TaskItem({ task, projects, tags }: TaskItemProps) {
+  const subtasksDone = task.subtasks.filter((s) => s.isDone).length;
   // useOptimistic: la casilla cambia al instante y, si el servidor falla,
   // vuelve sola a su valor real cuando termina la transición.
   const [optimisticDone, setOptimisticDone] = useOptimistic(task.status === "done");
@@ -75,12 +80,29 @@ export function TaskItem({ task, projects }: TaskItemProps) {
             </span>
           )}
           {task.dueDate && <DueDateBadge dueDate={task.dueDate} done={optimisticDone} />}
+          {task.subtasks.length > 0 && (
+            <span className="inline-flex items-center gap-1 text-xs text-zinc-600 dark:text-zinc-400">
+              <ListChecks className="size-3.5" aria-hidden="true" />
+              <span className="sr-only">Subtareas completadas: </span>
+              {subtasksDone}/{task.subtasks.length}
+            </span>
+          )}
         </div>
+
+        {task.tags.length > 0 && !optimisticDone && (
+          <ul aria-label="Etiquetas" className="mt-2 flex flex-wrap gap-1.5">
+            {task.tags.map((tag) => (
+              <li key={tag.id}>
+                <TagBadge name={tag.name} color={tag.color} />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Acciones: siempre visibles en móvil; en escritorio aparecen al pasar el ratón o con el foco */}
       <div className="flex shrink-0 items-center sm:opacity-0 sm:transition sm:group-focus-within:opacity-100 sm:group-hover:opacity-100">
-        <TaskEditDialog task={task} projects={projects} />
+        <TaskEditDialog task={task} projects={projects} tags={tags} />
         <ConfirmDeleteButton
           action={deleteTask.bind(null, task.id)}
           label={`Eliminar ${task.title}`}

@@ -6,6 +6,8 @@ import { type ColorName, toColorName } from "@/lib/colors";
 import { PRIORITY_RANK, RECENT_DONE_LIMIT, type TaskPriority, type TaskStatus } from "./constants";
 
 export type TaskProject = { id: string; name: string; color: ColorName };
+export type TaskTag = { id: string; name: string; color: ColorName };
+export type Subtask = { id: string; title: string; isDone: boolean };
 
 export type Task = {
   id: string;
@@ -16,12 +18,22 @@ export type Task = {
   dueDate: string | null;
   completedAt: string | null;
   project: TaskProject | null;
+  tags: TaskTag[];
+  subtasks: Subtask[];
 };
 
-// Columnas que pedimos siempre. "project:projects(...)" trae el proyecto de cada tarea
-// en la misma consulta (embed por la clave foránea project_id).
-const TASK_COLUMNS =
-  "id, title, description, status, priority, due_date, completed_at, project:projects(id, name, color)";
+// Columnas que pedimos siempre, con sus relaciones en la misma consulta:
+//  - project: muchos-a-uno (tasks.project_id → projects)
+//  - task_tags → tag: muchos-a-muchos a través de la tabla intermedia
+//  - subtasks: uno-a-muchos
+const TASK_COLUMNS = `
+  id, title, description, status, priority, due_date, completed_at,
+  project:projects(id, name, color),
+  task_tags(tag:tags(id, name, color)),
+  subtasks(id, title, is_done, position)
+`;
+
+type ColoredRow = { id: string; name: string; color: string };
 
 type TaskRow = {
   id: string;
@@ -31,8 +43,12 @@ type TaskRow = {
   priority: string;
   due_date: string | null;
   completed_at: string | null;
-  project: { id: string; name: string; color: string } | null;
+  project: ColoredRow | null;
+  task_tags: { tag: ColoredRow | null }[];
+  subtasks: { id: string; title: string; is_done: boolean; position: number }[];
 };
+
+const toColored = (row: ColoredRow) => ({ id: row.id, name: row.name, color: toColorName(row.color) });
 
 function toTask(row: TaskRow): Task {
   return {
@@ -43,9 +59,13 @@ function toTask(row: TaskRow): Task {
     priority: row.priority as TaskPriority,
     dueDate: row.due_date,
     completedAt: row.completed_at,
-    project: row.project
-      ? { id: row.project.id, name: row.project.name, color: toColorName(row.project.color) }
-      : null,
+    project: row.project ? toColored(row.project) : null,
+    tags: row.task_tags
+      .flatMap(({ tag }) => (tag ? [toColored(tag)] : []))
+      .sort((a, b) => a.name.localeCompare(b.name, "es")),
+    subtasks: [...row.subtasks]
+      .sort((a, b) => a.position - b.position)
+      .map((s) => ({ id: s.id, title: s.title, isDone: s.is_done })),
   };
 }
 

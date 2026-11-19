@@ -29,6 +29,12 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 - `npm run build` — build de producción (incluye comprobación de tipos)
 - `npm run start` — sirve el build
 - `npm run lint` — ESLint
+- `npm run db:types` — regenerar `src/types/database.ts` tras cambiar el esquema
+
+## Repositorio
+- GitHub: https://github.com/jaimev54/gestor-tareas-next (público)
+- Ramas: `main` (lo terminado; Vercel desplegará desde aquí) y `dev` (trabajo diario). Commits en `dev`; merge a `main` al cerrar cada paso o cuando Jaime lo pida.
+- Antes de cada push: comprobar que no entran `.env.local` ni `CONTRASEÑA*.txt`.
 
 ## Plan
 1. ✅ Setup con create-next-app
@@ -36,7 +42,7 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 3. ✅ Auth: registro, login, recuperar contraseña y protección de rutas (`src/proxy.ts`, `src/lib/auth/`, grupo `(auth)`, `/auth/confirm`)
 4. ✅ Layout y UI base: inicio pública, grupo `(app)` con barra de navegación, tema claro/oscuro/sistema, 404
 5. ✅ CRUD de proyectos (`/proyectos`, `src/lib/projects/`); tipos de la base con `npm run db:types` (requiere `npx supabase login`)
-6. CRUD de tareas con Server Actions y validación con Zod (prioridad, fecha límite, etiquetas, subtareas)
+6. ✅ CRUD de tareas (`/tareas`, `src/lib/tasks/`), etiquetas (`src/lib/tags/`, gestor en `/proyectos`) y subtareas; migración 0002 con la función `set_task_tags` (RPC)
 7. Filtros, búsqueda y orden sincronizados con la URL
 8. Tablero kanban con arrastrar y soltar
 9. Dashboard con estadísticas
@@ -56,7 +62,8 @@ Es el 2.º proyecto de Supabase de Jaime (máximo del plan gratis): el otro lo u
 - `middleware` ahora se llama `proxy` (`src/proxy.ts`). Es solo la primera barrera: cada página/acción protegida usa `requireUser()`.
 - Formularios: Server Action + `useActionState`; validar con Zod; devolver `FormState` (`src/lib/forms.ts`).
 - Tema: `data-theme` en `<html>` lo pone `ThemeScript` antes de pintar; Tailwind usa `@custom-variant dark` sobre ese atributo (no la media query). Preferencia en localStorage.
-- Si el dev server sirve estilos viejos tras cambiar `globals.css`: parar el server, borrar `.next` y arrancar de nuevo.
+- Si el dev server sirve código o estilos viejos: parar el server, borrar `.next` y arrancar de nuevo.
+- No ejecutar `npm run build` mientras Jaime tiene `npm run dev` corriendo (se pisan la caché). Con el server encendido, verificar con `npx tsc --noEmit` y `npm run lint`.
 - Grupos de rutas: `(auth)` = tarjeta centrada; `(app)` = área privada con barra (`APP_NAV_LINKS` en `src/lib/routes.ts`).
 - Supabase Auth → URL Configuration: Site URL y Redirect URLs (`http://localhost:3000/**`; añadir la de producción en el deploy).
 
