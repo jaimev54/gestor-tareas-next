@@ -123,7 +123,8 @@ export function TaskFiltersBar({
             type="search"
             defaultValue={filters.q}
             onChange={(event) => onSearchChange(event.target.value)}
-            placeholder="Buscar en títulos y descripciones…"
+            placeholder="Buscar tareas…"
+            title="Busca en títulos y descripciones"
             autoComplete="off"
             maxLength={100}
             className="w-full rounded-lg border border-zinc-300 bg-white py-2 pr-10 pl-9 text-base shadow-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 sm:text-sm dark:border-zinc-700 dark:bg-zinc-900"
