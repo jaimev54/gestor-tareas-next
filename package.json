@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:types": "supabase gen types typescript --remote=izmoacuekuhndjmchguz --schema public > src/types/database.ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test"
