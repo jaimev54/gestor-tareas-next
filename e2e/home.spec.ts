@@ -33,6 +33,14 @@ test.describe("Página de inicio", () => {
   });
 });
 
+test("las respuestas llevan las cabeceras de seguridad", async ({ request }) => {
+  const response = await request.get("/");
+  const headers = response.headers();
+  expect(headers["x-frame-options"]).toBe("DENY");
+  expect(headers["x-content-type-options"]).toBe("nosniff");
+  expect(headers["referrer-policy"]).toBe("strict-origin-when-cross-origin");
+});
+
 test("una ruta inexistente responde 404 con página propia", async ({ page }) => {
   const response = await page.goto("/esta-pagina-no-existe");
   expect(response?.status()).toBe(404);
