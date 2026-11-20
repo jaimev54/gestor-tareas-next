@@ -49,3 +49,6 @@ CONTRASEÑA*.txt
 /playwright-report/
 /test-results/
 /blob-report/
+
+# caché de la CLI de Supabase (se regenera sola)
+/supabase/.temp/
