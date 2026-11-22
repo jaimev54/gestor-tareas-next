@@ -50,7 +50,7 @@ export function WeeklyChart({ weeks, currentYear }: { weeks: WeekBucket[]; curre
           ))}
         </div>
 
-        <div className="relative flex-1">
+        <div className="relative min-w-0 flex-1">
           {/* Líneas guía: finas, sólidas y discretas */}
           <div aria-hidden="true" className="absolute inset-x-0 top-0" style={{ height: CHART_HEIGHT }}>
             {ticks.map((tick) => (
@@ -68,7 +68,7 @@ export function WeeklyChart({ weeks, currentYear }: { weeks: WeekBucket[]; curre
               const heightPct = (week.count / max) * 100;
               const description = `Semana del ${label(week)}${isCurrent ? " (actual)" : ""}: ${plural(week.count)}`;
               return (
-                <li key={week.weekStart} className="flex flex-col items-center">
+                <li key={week.weekStart} className="flex min-w-0 flex-col items-center">
                   {/* Zona de hover/foco más grande que la barra: toda la columna */}
                   <div
                     tabIndex={0}
@@ -101,10 +101,10 @@ export function WeeklyChart({ weeks, currentYear }: { weeks: WeekBucket[]; curre
                       {plural(week.count)}
                     </div>
                   </div>
-                  {/* Eje X: en móvil solo una de cada dos etiquetas para que no se amontonen */}
+                  {/* Eje X: en móvil solo una de cada dos etiquetas (las impares, que incluyen la semana actual) */}
                   <span
                     aria-hidden="true"
-                    className={`mt-1.5 text-xs whitespace-nowrap text-zinc-500 ${i % 2 === 1 && !isCurrent ? "invisible sm:visible" : ""}`}
+                    className={`mt-1.5 text-xs whitespace-nowrap text-zinc-500 ${i % 2 === 0 ? "invisible sm:visible" : ""}`}
                   >
                     {label(week)}
                   </span>

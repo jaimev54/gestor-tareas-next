@@ -20,7 +20,7 @@ function Card({ title, children, className = "" }: { title: string; children: Re
   return (
     <section
       aria-labelledby={id}
-      className={`rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 ${className}`}
+      className={`min-w-0 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 ${className}`}
     >
       <h2 id={id} className="mb-4 font-semibold">
         {title}

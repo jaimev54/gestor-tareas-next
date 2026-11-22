@@ -61,7 +61,7 @@ export function SubtaskList({ taskId, subtasks }: SubtaskListProps) {
           maxLength={200}
           autoComplete="off"
           placeholder="Añadir subtarea…"
-          className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 dark:border-zinc-700 dark:bg-zinc-900"
+          className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-base outline-none sm:text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 dark:border-zinc-700 dark:bg-zinc-900"
         />
         <button
           type="submit"
